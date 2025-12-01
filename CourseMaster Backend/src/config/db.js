@@ -7,6 +7,7 @@ const connectDB = async (req, res) => {
             dbName: config.database.db_name,
         });
         console.log("MongoDB Connected Successfully ✅");
+        console.log(`MongoDB Connected: ${mongoose.connection.host}`);
     } catch (error) {
         console.error("MongoDB Connection Error ❌", error.message);
         process.exit(1);

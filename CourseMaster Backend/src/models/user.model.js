@@ -16,22 +16,25 @@ const userSchema = new mongoose.Schema(
         enrolledCourses: [
             {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: "Enrollment", // Reference to the Enrollment model for tracking
+                ref: "Enrollment",
             },
         ],
     },
     { timestamps: true }
 );
 
-// Pre-save hook to hash the password before saving [cite: 21]
-userSchema.pre("save", async function (next) {
-    if (!this.isModified("password")) return next();
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
+userSchema.pre("save", async function next() {
+    // if (!this.isModified("password")) return;
+
+    try {
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+        next();
+    } catch (error) {
+        next(error);
+    }
 });
 
-// Instance method to compare passwords
 userSchema.methods.comparePassword = async function (candidatePassword) {
     return bcrypt.compare(candidatePassword, this.password);
 };
